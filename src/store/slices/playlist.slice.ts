@@ -30,12 +30,20 @@ export const playlistSlice = createSlice({
         },
         // Acción para añadir una canción a una lista específica
         addSongToPlaylist: (state, action: PayloadAction<{ playlistId: string; song: Song }>) => {
-            const playlist = state.lists.find(pl => pl.id === action.playlistId);
+            const { playlistId, song } = action.payload;
+
+            // Buscamos la referencia de la playlist en el estado
+            const playlist = state.lists.find(pl => pl.id === playlistId);
+
             if (playlist) {
-                // Verificamos que la canción no esté ya en la lista (evitar duplicados)
-                const exists = playlist.songs.find(s => s.trackId === action.song.trackId);
-                if (!exists) {
-                    playlist.songs.push(action.song);
+                // Verificamos si la canción ya existe usando su trackId único
+                const isDuplicate = playlist.songs.some(s => s.trackId === song.trackId);
+
+                if (!isDuplicate) {
+                    playlist.songs.push(song);
+                } else {
+                    // Podríamos manejar errores aquí, pero por ahora evitamos el duplicado
+                    console.warn("La canción ya está en esta playlist");
                 }
             }
         }
