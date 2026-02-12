@@ -3,6 +3,7 @@ import { MainLayout } from './layout/MainLayout';
 import { SearchPage } from './pages/SearchPage';
 import { CreatePlaylistPage } from './pages/CreatePlaylistPage';
 import { MyPlaylistsPage } from './pages/MyPlaylistsPage';
+import { AlbumDetailPage } from './pages/AlbumDetailPage';
 
 
 function App() {
@@ -15,6 +16,7 @@ function App() {
                 <Route index element={<SearchPage />} />
                 <Route path="create-playlist" element={<CreatePlaylistPage />} />
                 <Route path="my-playlists" element={<MyPlaylistsPage />} />
+                    <Route path="album/:id" element={<AlbumDetailPage />} />
                 </Route>
             </Routes>
         </BrowserRouter>

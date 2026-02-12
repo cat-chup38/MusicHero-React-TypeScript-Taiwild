@@ -12,3 +12,9 @@ export const searchSongs = async (term: string): Promise<iTunesResponse> => {
     const response = await api.get<iTunesResponse>(`/search?term=${term}&entity=song&limit=20`);
     return response.data;
 };
+
+export const getAlbumDetails = async (collectionId: string) => {
+    // El parámetro 'entity=song' nos trae el álbum Y todas sus canciones
+    const response = await axios.get(`https://itunes.apple.com/lookup?id=${collectionId}&entity=song`);
+    return response.data;
+};

@@ -2,6 +2,8 @@ import React from 'react';
 import type { Song } from '../../types/music.type';
 import { useAppDispatch, useAppSelector } from '../../store/hooks';
 import { addSongToPlaylist } from '../../store/slices/playlist.slice';
+import { useNavigate } from 'react-router-dom';
+
 
 interface SongCardProps {
     song: Song;
@@ -9,6 +11,7 @@ interface SongCardProps {
 
 export const SongCard: React.FC<SongCardProps> = ({ song }) => {
     const dispatch = useAppDispatch();
+    const navigate = useNavigate();
     // Obtenemos las listas para llenar el selector
     const playlists = useAppSelector((state) => state.playlists.lists);
 
@@ -26,7 +29,10 @@ export const SongCard: React.FC<SongCardProps> = ({ song }) => {
     return (
         <div className="bg-white rounded-2xl shadow-md overflow-hidden border border-gray-100 flex flex-col group transition-all hover:shadow-xl">
             {/* Contenedor de Imagen con efecto hover */}
-            <div className="relative overflow-hidden aspect-square">
+            <div
+                className="relative overflow-hidden aspect-square cursor-pointer"
+                onClick={() => navigate(`/album/${song.collectionId}`)} // Nota: Asegúrate de añadir collectionId a tu interfaz Song
+            >
                 <img
                     className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-50"
                     src={song.artworkUrl100.replace('100x100', '400x400')} // Truco técnico para mejor resolución
