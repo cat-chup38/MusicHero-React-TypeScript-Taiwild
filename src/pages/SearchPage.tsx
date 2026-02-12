@@ -4,62 +4,59 @@ import { setSongs, setLoading } from '../store/slices/music.slice';
 import { searchSongs } from '../api/music.api';
 import { Input } from '../components/ui/Input';
 import { SongCard } from '../components/music/SoundCard';
+import { useDebounce } from '../hooks/useDebounce';
 
 
 export const SearchPage = () => {
-    const [query, setQuery] = useState('Linkin Park'); // Valor inicial
+    const [searchTerm, setSearchTerm] = useState('Linkin Park');
+    const debouncedSearch = useDebounce(searchTerm, 500); // 500ms de espera
     const dispatch = useAppDispatch();
-    // Extraemos datos del store global
     const { searchResults, loading } = useAppSelector((state) => state.music);
 
-    const handleSearch = async (searchTerm: string) => {
-        if (!searchTerm) return;
+    // Este efecto solo se dispara cuando el valor "debounced" cambia
+    useEffect(() => {
+        const fetchMusic = async () => {
+            if (!debouncedSearch) return;
 
-        dispatch(setLoading(true));
-        try {
-            const data = await searchSongs(searchTerm);
-            dispatch(setSongs(data.results));
-        } catch (error) {
-            console.error("Error buscando música", error);
-        } finally {
-            dispatch(setLoading(false));
-        }
-  };
+            dispatch(setLoading(true));
+            try {
+                const data = await searchSongs(debouncedSearch);
+                dispatch(setSongs(data.results));
+            } catch (error) {
+                console.error(error);
+            } finally {
+                dispatch(setLoading(false));
+            }
+        };
 
-  // useEffect: Se ejecuta cada vez que el componente se monta
-  // o cuando cambian las dependencias en el array [].
-  useEffect(() => {
-        handleSearch(query);
-  }, []);
+        fetchMusic();
+    }, [debouncedSearch, dispatch]);
 
-  return (
+    return (
         <div className="container mx-auto p-6">
-        <header className="mb-8">
-            <h1 className="text-3xl font-bold mb-4">Busca tu música</h1>
-            <div className="flex gap-2 max-w-md">
-            <Input
-                placeholder="Artista, canción..."
-                value={query}
-                onChange={(e) => setQuery(e.target.value)}
-            />
-            <button
-                onClick={() => handleSearch(query)}
-                className="bg-blue-600 text-white px-6 py-2 rounded-lg font-medium hover:bg-blue-700"
-            >
-                Buscar
-            </button>
-            </div>
-        </header>
+            <header className="mb-8">
+                <h1 className="text-3xl font-bold mb-4">Descubre Música</h1>
+                <div className="max-w-md">
+                    <Input 
+                        placeholder="Escribe un artista o canción..." 
+                        value={searchTerm}
+                        onChange={(e) => setSearchTerm(e.target.value)}
+                    />
+                    <p className="text-xs text-gray-400 mt-2">Buscando automáticamente mientras escribes...</p>
+                </div>
+            </header>
 
-        {loading ? (
-            <p className="text-center text-xl">Cargando hits...</p>
-        ) : (
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-            {searchResults.map((song) => (
-                <SongCard key={song.trackId} song={song} />
-            ))}
-            </div>
-        )}
+            {loading ? (
+                <div className="flex justify-center p-20">
+                    <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+                </div>
+            ) : (
+                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+                    {searchResults.map((song) => (
+                        <SongCard key={song.trackId} song={song} />
+                    ))}
+                </div>
+            )}
         </div>
     );
 };
