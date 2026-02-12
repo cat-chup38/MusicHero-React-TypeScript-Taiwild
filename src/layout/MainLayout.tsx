@@ -10,7 +10,12 @@ export const MainLayout = () => {
                 <Link to="/" className="text-2xl font-bold text-blue-600 italic">MusicHero</Link>
                 <div className="flex gap-6 font-medium">
                     <Link to="/" className="hover:text-blue-500 transition-colors">Búsqueda</Link>
-                    <Link to="/create-playlist" className="hover:text-blue-500 transition-colors">Nueva Playlist</Link>
+                    <Link to="/my-playlists" className="hover:text-blue-500 transition-colors">Playlists</Link>
+                    <Link
+                        to="/create-playlist"
+                        className="hover:text-blue-500 transition-colors font-bold text-xl rounded-full px-6 border-2 border-slate-200">
+                            +
+                    </Link>
                 </div>
                 </div>
             </nav>
